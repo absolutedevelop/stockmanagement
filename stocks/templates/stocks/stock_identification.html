@@ -1,11 +1,15 @@
-<!DOCTYPE html>
-<html>
-<head>
-	<title>STock identi</title>
-</head>
-<body>
 
-	<h1>Identify stock here</h1>
+{% extends 'base_layout.html' %}
 
-</body>
-</html>
+{% block content %}
+<div class="stock-items">
+	{% for item in stock_items %}
+
+		<div>
+			<span>stock - {{item.id}}</span>
+			<span> {{item.item_description}}</span>
+		</div>
+
+	{% endfor %}
+</div>
+{% endblock %}
