@@ -2,9 +2,8 @@ from django.shortcuts import render,redirect
 from .forms import StockSelectForm,StockForm
 from .models import StockItem
 from django.http import HttpResponse
-import datetime
-from django.core.mail import send_mail
 
+import datetime
 # Create your views here.
 
 def stock_identification(request):
@@ -37,9 +36,6 @@ def single_stock(request,stock_marker):
 			stock.quantity = quantity
 			#stock.scanned_date = datetime.datetime.now().date()
 			stock.save()
-
-			response  = redirect("/stock/report/send")
-			return response
 			
 
 
@@ -47,19 +43,9 @@ def single_stock(request,stock_marker):
 
 	return render(request,'stocks/stock_quantity.html',{'form':form})
 
+
 def send_email_report(request):
-	from_email = "stockmanagementsystemintern@gmail.com"
-	#send an email
-	send_mail(
 
-		"Stock Management Report",
 
-		"Hey form app",
-
-		from_email,
-
-		["mathalefortunate5@gmail.com"]
-
-	)
 
 	return render(request,'stocks/report.html')
