@@ -46,6 +46,18 @@ def single_stock(request,stock_marker):
 
 def send_email_report(request):
 
+	from_email = "stockmanagementsystemintern@gmail.com"
+	#send an email
+	send_mail(
 
+		"Stock Management Report",
+
+		"Hey form app",
+
+		from_email,
+
+		["mathalefortunate5@gmail.com"]
+
+	)
 
 	return render(request,'stocks/report.html')
