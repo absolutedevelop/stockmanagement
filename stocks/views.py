@@ -1,6 +1,6 @@
 from django.shortcuts import render,redirect
 from .forms import StockSelectForm,StockForm, EmailForm
-from .models import StockItem
+from .models import StockItem, StockQuantities
 from django.http import HttpResponse
 import datetime
 
@@ -35,16 +35,19 @@ def single_stock(request,stock_marker):
 		#check if the form is valid 
 		if form.is_valid():
 			#get a the quantity from the form
-			quantity = form.cleaned_data["quantity"]
+			quant = form.cleaned_data["quantity"]
+			#set the scanned date
 			stock.scanned_date = datetime.datetime.now()
-			#get the old stock quantity
-			old_quant = stock.quantity
-			#update the stock quanity - add the old stock with the new stock
-			stock.quantity = old_quant + quantity
-			#stock.scanned_date = datetime.datetime.now().date()
+			#save the stock with the new scanned date
 			stock.save()
+
+			#create a stock quantity
+			stock_quantity = StockQuantities.objects.create(quantity= quant, stock_item=stock)
+			#save the stock quantity
+			stock_quantity.save()
+
 			#redirect to the send email page
-			response  = redirect("report/send")
+			response  = redirect("report/send/" + stock_marker)
 			return response
 
 	#create a form for the stock quantiry
@@ -53,10 +56,14 @@ def single_stock(request,stock_marker):
 	return render(request,'stocks/stock_quantity.html',{'form':form})
 
 
-def send_email_report(request):
+def send_email_report(request, stock_marker):
 
 	#get the stock list 
-	stock_list = StockItem.objects.all();
+	stock = StockItem.objects.get(identification_marker = stock_marker)
+
+	#get the stock quantities 
+	stock_quantities  = stock.stockquantities_set.all();
+
 	#check if the form has been submitted.
 	if request.method == "POST":
 		#create a form and past the POST data.
@@ -66,9 +73,10 @@ def send_email_report(request):
 			#get the email 
 			email = form.cleaned_data["email"]
 			#send the email 
-			form.send_email(email, stock_list)	
+			form.send_email(email, stock, stock_quantities)	
 			#redirect to the home page 
-
+			response  = redirect("/")
+			return response
 	#create a an email form
 	email_form = EmailForm();
 	#render the template- and pass the email form 

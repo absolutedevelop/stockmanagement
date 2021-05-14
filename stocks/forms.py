@@ -26,16 +26,19 @@ class EmailForm(forms.Form):
 	email = forms.EmailField();
 
 	#send an email of the stock list - report 
-	def send_email(self,email,stock_list):
+	def send_email(self,email,stock,stock_quantities):
 		#create a report to send to the email 
-		report = "A Report from the Intern Stock Management App\n\n";
+		report = "A Report from the Intern Stock Management App\n\nThe following stock item has been updated!\n";
 		items_total = 0; # total of all the stock items 
-		for stock in stock_list:
-			report = report + "________________________________\n" 
-			#append a stock to the report string
-			report = report + "Stock Code(" + stock.identification_marker + "), Date scanned(" + stock.scanned_date.strftime("%Y:%m:%d") + "), quantity(" + str(stock.quantity) + ")\n";
-			items_total = items_total + stock.quantity
-		report = report + "________________________________\n" 
+		report = report + "Stock Code(" + stock.identification_marker + ")\n"
+		report = report + "Scanned Date(" + stock.scanned_date.strftime("%Y:%m:%d") + ")\n"
+		report = report + "Quantities \n"
+
+		for stock_quant in stock_quantities:
+			report = report + "- quantity : " + str(stock_quant.quantity) + ",\t Date added : " + stock_quant.created_at.strftime("%Y:%m:%d") + "\n"
+			#calculate the total stock items
+			items_total += stock_quant.quantity
+
 		#append the total of stock items to the report string 
 		report = report + "\nTotal stock items : " + str(items_total) 
 		#email for the app.
